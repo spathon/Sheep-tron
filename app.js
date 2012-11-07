@@ -15,7 +15,7 @@ window.requestAnimFrame = (function(){
 
   var canvas = document.getElementById('game'),
     ctx = canvas.getContext('2d'),
-    playing = true,
+    playing = false,
     // Constants
     PI = Math.PI,
     WIDTH = document.body.clientWidth -4,
@@ -95,7 +95,27 @@ window.requestAnimFrame = (function(){
 
   // left 37, top 38, right 39, bottom 40, space 32
   var stepSpeed = 10;
-  addEventListener("keydown", function (e) {
+  var tap = false;
+  window.addEventListener("keydown", changeDirection, false);
+  document.addEventListener('touchstart', function(){
+    tap = true;
+    playing = playing ? false : true;
+    window.addEventListener('deviceorientation', changeDirection, false);
+  }, false);
+
+  function changeDirection(e) {
+
+    if(tap === true && window.DeviceOrientationEvent) {
+      if(e.beta < 0 && Math.abs(e.beta) > Math.abs(e.gamma)){
+        e.keyCode = 38;
+      }else if(e.beta > 0 && Math.abs(e.beta) > Math.abs(e.gamma)){
+        e.keyCode = 40;
+      }else if(e.gamma > 0 && Math.abs(e.gamma) > Math.abs(e.beta)){
+        e.keyCode = 39;
+      }else if(e.gamma < 0 && Math.abs(e.gamma) > Math.abs(e.beta)){
+        e.keyCode = 37;
+      }
+    }
     // pause
     if(e.keyCode == 32){
       playing = playing ? false : true;
@@ -113,8 +133,11 @@ window.requestAnimFrame = (function(){
       player.direction = 3;
       sprite.direction('bottom');
     }
-  }, false);
+  }
+  
 
+
+  // Render the view
   function render(){
     canvas.width = canvas.width;
     //ctx.clearRect(0,0,WIDTH,HEIGHT);
